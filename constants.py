@@ -47,14 +47,27 @@ TEMPERATURE = 0.5
 # RAG参照用のデータソース系
 # ==========================================
 RAG_TOP_FOLDER_PATH = "./data"
+
+# 拡張子ごとのローダー設定
 SUPPORTED_EXTENSIONS = {
     ".pdf": PyMuPDFLoader,
     ".docx": Docx2txtLoader,
-    ".csv": lambda path: CSVLoader(path, encoding="utf-8")
+    ".csv": lambda path: CSVLoader(path, encoding="utf-8"),
+    ".txt": TextLoader  # ← txtも追加（問題5対策も兼ねて）
 }
+
 WEB_URL_LOAD_TARGETS = [
     "https://generative-ai.web-camp.io/"
 ]
+
+# ← 問題2対応：Retrieverで何件取り出すか
+RETRIEVER_TOP_K = 5
+
+# ← 問題2対応：チャンク分割サイズとオーバーラップの定数化
+CHUNK_SIZE = 500
+CHUNK_OVERLAP = 50
+# ← 問題2対応：Retrieverで何件取り出すか
+NUM_RETRIEVAL_DOCS = 5
 
 
 # ==========================================
@@ -104,9 +117,10 @@ NO_DOC_MATCH_ANSWER = "該当資料なし"
 COMMON_ERROR_MESSAGE = "このエラーが繰り返し発生する場合は、管理者にお問い合わせください。"
 INITIALIZE_ERROR_MESSAGE = "初期化処理に失敗しました。"
 NO_DOC_MATCH_MESSAGE = """
-    入力内容と関連する社内文書が見つかりませんでした。\n
-    入力内容を変更してください。
+入力内容と関連する社内文書が見つかりませんでした。
+入力内容を変更してください。
 """
 CONVERSATION_LOG_ERROR_MESSAGE = "過去の会話履歴の表示に失敗しました。"
 GET_LLM_RESPONSE_ERROR_MESSAGE = "回答生成に失敗しました。"
 DISP_ANSWER_ERROR_MESSAGE = "回答表示に失敗しました。"
+DISPLAY_LLM_RESPONSE_ERROR_MESSAGE = "回答表示に失敗しました。"

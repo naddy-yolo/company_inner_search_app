@@ -83,7 +83,7 @@ def get_llm_response(chat_message):
     )
 
     # モードによってLLMから回答を取得する用のプロンプトを変更
-    if st.session_state.mode == ct.ANSWER_MODE_1:
+    if st.session_state.sidebar_mode == ct.ANSWER_MODE_1:
         # モードが「社内文書検索」の場合のプロンプト
         question_answer_template = ct.SYSTEM_PROMPT_DOC_SEARCH
     else:
@@ -110,7 +110,21 @@ def get_llm_response(chat_message):
 
     # LLMへのリクエストとレスポンス取得
     llm_response = chain.invoke({"input": chat_message, "chat_history": st.session_state.chat_history})
-    # LLMレスポンスを会話履歴に追加
     st.session_state.chat_history.extend([HumanMessage(content=chat_message), llm_response["answer"]])
 
-    return llm_response
+    # 関連ドキュメント情報を抽出
+    docs = []
+    if "context" in llm_response:
+        for doc in llm_response["context"]:
+            path = getattr(doc, "metadata", {}).get("source", "不明")
+            # PDFファイルのみページ番号を取得
+            if path.lower().endswith(".pdf"):
+                page = getattr(doc, "metadata", {}).get("page")
+            else:
+                page = None
+            docs.append({
+                "path": path,
+                "page": page
+            })
+
+    return {"answer": llm_response["answer"], "docs": docs}
