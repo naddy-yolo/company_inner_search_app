@@ -43,6 +43,7 @@ if "messages" not in st.session_state:
 # 初期表示
 ############################################################
 cn.display_sidebar_info()
+cn.display_select_mode()  # ← この行を追加
 cn.display_app_title()
 cn.display_initial_ai_message()
 
